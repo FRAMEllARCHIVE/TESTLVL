@@ -140,22 +140,11 @@ window.addEventListener('load', function() {
         let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
         let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-        if (bounceBack) {
-            const currentTime = Date.now();
-            if (currentTime < bounceEndTime) {
-                velocityX = bounceVelocityX;
-                velocityY = bounceVelocityY;
-            } else {
-                bounceBack = false;
-            }
-        }
-
         playerSvg.style.left = (playerX + velocityX) + 'px';
         if (checkCollision()) {
             playerSvg.style.left = playerX + 'px';
-        } else if (checkFallCollision(velocityX, velocityY)) {
-            // If bounced, stop normal movement updates
-            return;
+        } else if (checkFallCollision()) {
+            playerX -= velocityX * 2; // Bounce back
         } else {
             const maxX = window.innerWidth;
             playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
@@ -164,9 +153,8 @@ window.addEventListener('load', function() {
         playerSvg.style.top = (playerY + velocityY) + 'px';
         if (checkCollision()) {
             playerSvg.style.top = playerY + 'px';
-        } else if (checkFallCollision(velocityX, velocityY)) {
-            // If bounced, stop normal movement updates
-            return;
+        } else if (checkFallCollision()) {
+            playerY -= velocityY * 2; // Bounce back
         } else {
             const maxY = window.innerHeight;
             playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
@@ -197,6 +185,27 @@ window.addEventListener('load', function() {
             if (obstacle.isPointInFill(transformedPoint)) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    function checkFallCollision() {
+        const playerSvg = document.getElementById('player');
+        const playerCircle = playerSvg.querySelector('circle');
+        const playerRect = playerSvg.getBoundingClientRect();
+        const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+        const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+
+        const fall = document.querySelector('#fall path');
+        const svg = document.querySelector('svg');
+        const point = svg.createSVGPoint();
+        point.x = playerCenterX;
+        point.y = playerCenterY;
+
+        const transform = fall.getScreenCTM().inverse();
+        const transformedPoint = point.matrixTransform(transform);
+        if (fall.isPointInFill(transformedPoint)) {
+            return true;
         }
         return false;
     }
