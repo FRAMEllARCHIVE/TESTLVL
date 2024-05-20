@@ -2,9 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PONDER</title>
     <style>
+
+        body {
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
+            margin: 0;
+            cursor: pointer;
+            background: black;
+        }
+
+        .content {
+            width: 90vw;
+            height: 90vh;
+            max-width: 90vh;
+            max-height: 90vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .background-container {
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black url("level.webp") no-repeat center center fixed;
+            background-size: contain;
+            z-index: -1;
+        }
+
+        svg {
+            position: absolute;
+        }
+
+        #player {
+            display: none;
+            width: 4px;
+            height: 4px;
+            left:0%; 
+            top:0%; 
+            transform: translate(-50%, -50%);
+        }
+
         #obstacles {
             position: absolute;
             top: 50%;
@@ -29,7 +78,7 @@
             left: 58%;
             top: 78%;
             transform: translate(-50%, -50%);
-            opacity: 0.3;
+            opacity: 0.2;
         }
     </style>
 </head>
@@ -47,6 +96,8 @@
             <path d="M0,61.78 L63.78,61.78 L63.78,63.78 L0,63.78 Z" fill="red"/>
             <path d="M0,0 L2,0 L2,63.78 L0,63.78 Z" fill="red"/>
             <path d="M61.78,0 L63.78,0 L63.78,63.78 L61.78,63.78 Z" fill="red"/>
+            <path d="M0 0 0 63.78 17.07 63.78 17.07 61.19 29.5 60.5 29.5 57.18 31.89 57.18 33.81 56.69 33.81 53.75 37.34 53.16 37.34 50.42 33.71 49.84 51.14 44.55 51.14 42.4 52.21 42.4 52.21 40.34 54.07 40.34 54.07 38.68 55.74 38.68 55.74 36.72 60.83 36.72 60.83 34.37 63.78 34.37 63.78 0 0 0 Z"/>
+            <path d="M44.87 63.78 L44.87 56.69 52.41 52.48 54.27 53.75 56.62 53.85 56.62 51.79 62.59 48.37 63.78 49.15 63.78 63.78 44.87 63.78 Z"/>
         </svg>
 
         <svg id="navigation" width="90" height="90" viewBox="0 0 70 70">
@@ -54,12 +105,14 @@
         </svg>
 
         <svg id="fall" width="90" height="90" viewBox="0 0 70 70">
-            <path d="M11,0 L32,0 L16,63.78 L4,63.78 Z" fill="red"/>
+<path d="M11,0 L32,0 L16,63.78 L4,63.78 Z" fill="red"/>
         </svg>
 
     </div>
 
+
 <script>
+
 window.addEventListener('load', function() {
     const playerSvg = document.getElementById('player');
 
@@ -74,9 +127,11 @@ window.addEventListener('load', function() {
 
     teleportPlayerToCenterOfContent();
 
+
     window.addEventListener('devicemotion', function (event) {
         movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
     });
+
 
     function movePlayer(velocityX, velocityY) {
         velocityX *= 0.1;
@@ -152,26 +207,28 @@ window.addEventListener('load', function() {
         return false;
     }
 
-    function checkNavigationCollision() {
-        const playerSvg = document.getElementById('player');
-        const navigationSvg = document.getElementById('navigation');
-        const playerCircle = playerSvg.querySelector('circle');
-        const playerRect = playerSvg.getBoundingClientRect();
-        const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-        const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+        function checkNavigationCollision() {
+            const playerSvg = document.getElementById('player');
+            const navigationSvg = document.getElementById('navigation');
+            const playerCircle = playerSvg.querySelector('circle');
+            const playerRect = playerSvg.getBoundingClientRect();
+            const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+            const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
 
-        const navigationRect = navigationSvg.getBoundingClientRect();
+            const navigationRect = navigationSvg.getBoundingClientRect();
 
-        if (
-            playerCenterX >= navigationRect.left &&
-            playerCenterX <= navigationRect.right &&
-            playerCenterY >= navigationRect.top &&
-            playerCenterY <= navigationRect.bottom
-        ) {
-            window.parent.postMessage('navigateToLVL2', '*');
+            if (
+                playerCenterX >= navigationRect.left &&
+                playerCenterX <= navigationRect.right &&
+                playerCenterY >= navigationRect.top &&
+                playerCenterY <= navigationRect.bottom
+            ) {
+                window.parent.postMessage('navigateToLVL2', '*');
+            }
         }
-    }
 });
+
 </script>
+
 </body>
 </html>
