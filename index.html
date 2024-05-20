@@ -115,11 +115,7 @@
 
 window.addEventListener('load', function() {
     const playerSvg = document.getElementById('player');
-    let bounceBack = false;
-    let bounceVelocityX = 0;
-    let bounceVelocityY = 0;
-    let bounceEndTime = 0;
-    
+
     function teleportPlayerToCenterOfContent() {
         const content = document.querySelector('.content');
         const centerX = content.clientWidth * 0.58;
@@ -203,31 +199,30 @@ window.addEventListener('load', function() {
         return false;
     }
 
-    function checkFallCollision(velocityX, velocityY) {
-        const playerSvg = document.getElementById('player');
-        const playerCircle = playerSvg.querySelector('circle');
-        const playerRect = playerSvg.getBoundingClientRect();
-        const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-        const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+function checkFallCollision(velocityX, velocityY) {
+    const playerSvg = document.getElementById('player');
+    const playerCircle = playerSvg.querySelector('circle');
+    const playerRect = playerSvg.getBoundingClientRect();
+    const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+    const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
 
-        const fall = document.querySelector('#fall path');
-        const svg = document.querySelector('svg');
-        const point = svg.createSVGPoint();
-        point.x = playerCenterX;
-        point.y = playerCenterY;
+    const fall = document.querySelector('#fall path');
+    const svg = document.querySelector('svg');
+    const point = svg.createSVGPoint();
+    point.x = playerCenterX;
+    point.y = playerCenterY;
 
-        const transform = fall.getScreenCTM().inverse();
-        const transformedPoint = point.matrixTransform(transform);
-        if (fall.isPointInFill(transformedPoint)) {
-            bounceBack = true;
-            const angle = Math.atan2(velocityY, velocityX);
-            bounceVelocityX = -5 * Math.cos(angle);
-            bounceVelocityY = -5 * Math.sin(angle);
-            bounceEndTime = Date.now() + 500; // 0.5 seconds
-            return true;
-        }
-        return false;
+    const transform = fall.getScreenCTM().inverse();
+    const transformedPoint = point.matrixTransform(transform);
+    if (fall.isPointInFill(transformedPoint)) {
+        const angle = Math.atan2(velocityY, velocityX);
+        const bounceVelocityX = -Math.cos(angle) * 5;
+        const bounceVelocityY = -Math.sin(angle) * 5;
+        movePlayer(bounceVelocityX, bounceVelocityY);
+        return true;
     }
+    return false;
+}
 
         function checkNavigationCollision() {
             const playerSvg = document.getElementById('player');
