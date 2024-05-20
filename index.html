@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <style>
+        #obstacles {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+        }
+
+        #navigation {
+            position: absolute;
+            left: 98%;
+            top: 46%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+        }
+
+        #fall {
+            position: absolute;
+            left: 58%;
+            top: 78%;
+            transform: translate(-50%, -50%);
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <div class="background-container"></div>
+
+        <svg id="player" style="left:50%; top:50%; transform: translate(-50%, -50%); position: absolute;">
+            <circle cx="2" cy="2" r="2" fill="blue"/>
+        </svg>
+
+        <svg id="obstacles" width="100%" height="100%" viewBox="0 0 63.78 63.78">
+            <path d="M0,0 L63.78,0 L63.78,2 L0,2 Z" fill="red"/>
+            <path d="M0,61.78 L63.78,61.78 L63.78,63.78 L0,63.78 Z" fill="red"/>
+            <path d="M0,0 L2,0 L2,63.78 L0,63.78 Z" fill="red"/>
+            <path d="M61.78,0 L63.78,0 L63.78,63.78 L61.78,63.78 Z" fill="red"/>
+        </svg>
+
+        <svg id="navigation" width="90" height="90" viewBox="0 0 70 70">
+            <circle cx="35" cy="35" r="35" fill="blue"/>
+        </svg>
+
+        <svg id="fall" width="90" height="90" viewBox="0 0 70 70">
+            <path d="M11,0 L32,0 L16,63.78 L4,63.78 Z" fill="red"/>
+        </svg>
+
+    </div>
+
+<script>
+window.addEventListener('load', function() {
+    const playerSvg = document.getElementById('player');
+
+    function teleportPlayerToCenterOfContent() {
+        const content = document.querySelector('.content');
+        const centerX = content.clientWidth * 0.58;
+        const centerY = content.clientHeight * 0.92;
+        playerSvg.style.left = (centerX - playerSvg.clientWidth / 2) + 'px';
+        playerSvg.style.top = (centerY - playerSvg.clientHeight / 2) + 'px';
+        playerSvg.style.display = 'block';
+    }
+
+    teleportPlayerToCenterOfContent();
+
+    window.addEventListener('devicemotion', function (event) {
+        movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
+    });
+
+    function movePlayer(velocityX, velocityY) {
+        velocityX *= 0.1;
+        velocityY *= 0.1;
+        const playerSvg = document.getElementById('player');
+
+        let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
+        let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
+
+        playerSvg.style.left = (playerX + velocityX) + 'px';
+        if (checkCollision() || checkFallCollision()) {
+            playerSvg.style.left = playerX - velocityX + 'px';
+        } else {
+            const maxX = window.innerWidth;
+            playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
+        }
+
+        playerSvg.style.top = (playerY + velocityY) + 'px';
+        if (checkCollision() || checkFallCollision()) {
+            playerSvg.style.top = playerY - velocityY + 'px';
+        } else {
+            const maxY = window.innerHeight;
+            playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
+        }
+
+        playerSvg.style.left = playerX + 'px';
+        playerSvg.style.top = playerY + 'px';
+
+        checkNavigationCollision();
+    }
+
+    function checkCollision() {
+        const playerSvg = document.getElementById('player');
+        const playerCircle = playerSvg.querySelector('circle');
+        const playerRect = playerSvg.getBoundingClientRect();
+        const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+        const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+
+        const obstacles = document.querySelectorAll('#obstacles path');
+        const svg = document.querySelector('svg');
+        const point = svg.createSVGPoint();
+        point.x = playerCenterX;
+        point.y = playerCenterY;
+
+        for (let obstacle of obstacles) {
+            const transform = obstacle.getScreenCTM().inverse();
+            const transformedPoint = point.matrixTransform(transform);
+            if (obstacle.isPointInFill(transformedPoint)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function checkFallCollision() {
+        const playerSvg = document.getElementById('player');
+        const playerCircle = playerSvg.querySelector('circle');
+        const playerRect = playerSvg.getBoundingClientRect();
+        const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+        const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+
+        const fall = document.querySelector('#fall path');
+        const svg = document.querySelector('svg');
+        const point = svg.createSVGPoint();
+        point.x = playerCenterX;
+        point.y = playerCenterY;
+
+        const transform = fall.getScreenCTM().inverse();
+        const transformedPoint = point.matrixTransform(transform);
+        if (fall.isPointInFill(transformedPoint)) {
+            return true;
+        }
+        return false;
+    }
+
+    function checkNavigationCollision() {
+        const playerSvg = document.getElementById('player');
+        const navigationSvg = document.getElementById('navigation');
+        const playerCircle = playerSvg.querySelector('circle');
+        const playerRect = playerSvg.getBoundingClientRect();
+        const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+        const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+
+        const navigationRect = navigationSvg.getBoundingClientRect();
+
+        if (
+            playerCenterX >= navigationRect.left &&
+            playerCenterX <= navigationRect.right &&
+            playerCenterY >= navigationRect.top &&
+            playerCenterY <= navigationRect.bottom
+        ) {
+            window.parent.postMessage('navigateToLVL2', '*');
+        }
+    }
+});
+</script>
+</body>
+</html>
