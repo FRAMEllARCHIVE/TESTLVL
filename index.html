@@ -144,7 +144,7 @@ window.addEventListener('load', function() {
         if (checkCollision()) {
             playerSvg.style.left = playerX + 'px';
         } else if (checkFallCollision()) {
-            playerX -= velocityX * 2; // Bounce back
+            playerX -= velocityX * 5; // Bounce back
         } else {
             const maxX = window.innerWidth;
             playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
@@ -154,7 +154,7 @@ window.addEventListener('load', function() {
         if (checkCollision()) {
             playerSvg.style.top = playerY + 'px';
         } else if (checkFallCollision()) {
-            playerY -= velocityY * 2; // Bounce back
+            playerY -= velocityY * 5; // Bounce back
         } else {
             const maxY = window.innerHeight;
             playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
