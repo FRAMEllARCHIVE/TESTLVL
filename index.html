@@ -202,9 +202,21 @@ window.addEventListener('load', function() {
         const transform = fall.getScreenCTM().inverse();
         const transformedPoint = point.matrixTransform(transform);
         if (fall.isPointInFill(transformedPoint)) {
+            bounceBack();
             return true;
         }
         return false;
+    }
+
+    function bounceBack() {
+        const playerSvg = document.getElementById('player');
+        const bounceDistance = 10; // Adjust this value to control bounce distance
+
+        let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
+        let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
+
+        playerSvg.style.left = (playerX - bounceDistance) + 'px';
+        playerSvg.style.top = (playerY - bounceDistance) + 'px';
     }
 
         function checkNavigationCollision() {
