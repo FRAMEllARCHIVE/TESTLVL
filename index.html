@@ -140,11 +140,21 @@ window.addEventListener('load', function() {
         let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
         let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
+        if (bounceBack) {
+            const currentTime = Date.now();
+            if (currentTime < bounceEndTime) {
+                velocityX = bounceVelocityX;
+                velocityY = bounceVelocityY;
+            } else {
+                bounceBack = false;
+            }
+        }
+
         playerSvg.style.left = (playerX + velocityX) + 'px';
         if (checkCollision()) {
             playerSvg.style.left = playerX + 'px';
-        } else if (checkFallCollision()) {
-            playerX -= velocityX * 2; // Bounce back
+        } else if (checkFallCollision(velocityX, velocityY)) {
+            return;
         } else {
             const maxX = window.innerWidth;
             playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
@@ -153,8 +163,8 @@ window.addEventListener('load', function() {
         playerSvg.style.top = (playerY + velocityY) + 'px';
         if (checkCollision()) {
             playerSvg.style.top = playerY + 'px';
-        } else if (checkFallCollision()) {
-            playerY -= velocityY * 2; // Bounce back
+        } else if (checkFallCollision(velocityX, velocityY)) {
+            return;
         } else {
             const maxY = window.innerHeight;
             playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
@@ -189,7 +199,7 @@ window.addEventListener('load', function() {
         return false;
     }
 
-    function checkFallCollision() {
+    function checkFallCollision(velocityX, velocityY) {
         const playerSvg = document.getElementById('player');
         const playerCircle = playerSvg.querySelector('circle');
         const playerRect = playerSvg.getBoundingClientRect();
@@ -202,9 +212,14 @@ window.addEventListener('load', function() {
         point.x = playerCenterX;
         point.y = playerCenterY;
 
-        const transform2 = fall.getScreenCTM().inverse();
-        const transformedPoint2 = point.matrixTransform(transform2);
-        if (fall.isPointInFill(transformedPoint2)) {
+        const transform = fall.getScreenCTM().inverse();
+        const transformedPoint = point.matrixTransform(transform);
+        if (fall.isPointInFill(transformedPoint)) {
+            bounceBack = true;
+            const angle = Math.atan2(velocityY, velocityX);
+            bounceVelocityX = -5 * Math.cos(angle);
+            bounceVelocityY = -5 * Math.sin(angle);
+            bounceEndTime = Date.now() + 500; // 0.5 seconds
             return true;
         }
         return false;
