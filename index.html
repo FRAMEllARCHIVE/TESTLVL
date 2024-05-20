@@ -132,7 +132,6 @@ window.addEventListener('load', function() {
         movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
     });
 
-
     function movePlayer(velocityX, velocityY) {
         velocityX *= 0.1;
         velocityY *= 0.1;
@@ -142,16 +141,20 @@ window.addEventListener('load', function() {
         let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
         playerSvg.style.left = (playerX + velocityX) + 'px';
-        if (checkCollision() || checkFallCollision()) {
-            playerSvg.style.left = playerX - velocityX + 'px';
+        if (checkCollision()) {
+            playerSvg.style.left = playerX + 'px';
+        } else if (checkFallCollision()) {
+            playerX -= velocityX * 2; // Bounce back
         } else {
             const maxX = window.innerWidth;
             playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
         }
 
         playerSvg.style.top = (playerY + velocityY) + 'px';
-        if (checkCollision() || checkFallCollision()) {
-            playerSvg.style.top = playerY - velocityY + 'px';
+        if (checkCollision()) {
+            playerSvg.style.top = playerY + 'px';
+        } else if (checkFallCollision()) {
+            playerY -= velocityY * 2; // Bounce back
         } else {
             const maxY = window.innerHeight;
             playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
