@@ -132,49 +132,38 @@ window.addEventListener('load', function() {
         movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
     });
 
-    function movePlayer(velocityX, velocityY) {
-        velocityX *= 0.1;
-        velocityY *= 0.1;
-        const playerSvg = document.getElementById('player');
+function movePlayer(velocityX, velocityY) {
+    velocityX *= 0.1;
+    velocityY *= 0.1;
+    const playerSvg = document.getElementById('player');
 
-        let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
-        let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
+    let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
+    let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-        if (bounceBack) {
-            const currentTime = Date.now();
-            if (currentTime < bounceEndTime) {
-                velocityX = bounceVelocityX;
-                velocityY = bounceVelocityY;
-            } else {
-                bounceBack = false;
-            }
-        }
+    const maxX = window.innerWidth;
+    const maxY = window.innerHeight;
 
-        playerSvg.style.left = (playerX + velocityX) + 'px';
-        if (checkCollision()) {
-            playerSvg.style.left = playerX + 'px';
-        } else if (checkFallCollision(velocityX, velocityY)) {
-            return;
-        } else {
-            const maxX = window.innerWidth;
-            playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
-        }
+    // Calculate the new position of the player
+    const newPlayerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
+    const newPlayerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
 
-        playerSvg.style.top = (playerY + velocityY) + 'px';
-        if (checkCollision()) {
-            playerSvg.style.top = playerY + 'px';
-        } else if (checkFallCollision(velocityX, velocityY)) {
-            return;
-        } else {
-            const maxY = window.innerHeight;
-            playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
-        }
+    // Update the player's position
+    playerSvg.style.left = newPlayerX + 'px';
+    playerSvg.style.top = newPlayerY + 'px';
 
+    // Check for collision after updating the position
+    if (checkCollision()) {
+        // If collision detected, revert the position
         playerSvg.style.left = playerX + 'px';
         playerSvg.style.top = playerY + 'px';
-
-        checkNavigationCollision();
+    } else if (checkFallCollision(velocityX, velocityY)) {
+        // If fall collision detected, bounce back
+        return;
     }
+
+    checkNavigationCollision();
+}
+
 
     function checkCollision() {
         const playerSvg = document.getElementById('player');
