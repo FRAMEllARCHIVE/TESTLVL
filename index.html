@@ -140,11 +140,22 @@ window.addEventListener('load', function() {
         let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
         let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
+        if (bounceBack) {
+            const currentTime = Date.now();
+            if (currentTime < bounceEndTime) {
+                velocityX = bounceVelocityX;
+                velocityY = bounceVelocityY;
+            } else {
+                bounceBack = false;
+            }
+        }
+
         playerSvg.style.left = (playerX + velocityX) + 'px';
         if (checkCollision()) {
             playerSvg.style.left = playerX + 'px';
-        } else if (checkFallCollision()) {
-            playerX -= velocityX * 5; // Bounce back
+        } else if (checkFallCollision(velocityX, velocityY)) {
+            // If bounced, stop normal movement updates
+            return;
         } else {
             const maxX = window.innerWidth;
             playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
@@ -153,8 +164,9 @@ window.addEventListener('load', function() {
         playerSvg.style.top = (playerY + velocityY) + 'px';
         if (checkCollision()) {
             playerSvg.style.top = playerY + 'px';
-        } else if (checkFallCollision()) {
-            playerY -= velocityY * 5; // Bounce back
+        } else if (checkFallCollision(velocityX, velocityY)) {
+            // If bounced, stop normal movement updates
+            return;
         } else {
             const maxY = window.innerHeight;
             playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
@@ -189,7 +201,7 @@ window.addEventListener('load', function() {
         return false;
     }
 
-    function checkFallCollision() {
+    function checkFallCollision(velocityX, velocityY) {
         const playerSvg = document.getElementById('player');
         const playerCircle = playerSvg.querySelector('circle');
         const playerRect = playerSvg.getBoundingClientRect();
@@ -203,24 +215,7 @@ window.addEventListener('load', function() {
         point.y = playerCenterY;
 
         const transform = fall.getScreenCTM().inverse();
-        const transformedPoint = point.matrixTransform(transform);
-        if (fall.isPointInFill(transformedPoint)) {
-            bounceBack();
-            return true;
-        }
-        return false;
-    }
-
-    function bounceBack() {
-        const playerSvg = document.getElementById('player');
-        const bounceDistance = 10; // Adjust this value to control bounce distance
-
-        let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
-        let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
-
-        playerSvg.style.left = (playerX - bounceDistance) + 'px';
-        playerSvg.style.top = (playerY - bounceDistance) + 'px';
-    }
+        const transform
 
         function checkNavigationCollision() {
             const playerSvg = document.getElementById('player');
