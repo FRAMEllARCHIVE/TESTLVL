@@ -115,7 +115,11 @@
 
 window.addEventListener('load', function() {
     const playerSvg = document.getElementById('player');
-
+    let bounceBack = false;
+    let bounceVelocityX = 0;
+    let bounceVelocityY = 0;
+    let bounceEndTime = 0;
+    
     function teleportPlayerToCenterOfContent() {
         const content = document.querySelector('.content');
         const centerX = content.clientWidth * 0.58;
