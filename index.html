@@ -170,36 +170,34 @@ function movePlayer(velocityX, velocityY) {
     }
 
 function checkFallCollision(velocityX, velocityY) {
-  const playerSvg = document.getElementById('player');
-  const playerCircle = playerSvg.querySelector('circle');
-  const playerRect = playerSvg.getBoundingClientRect();
-  const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-  const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+    const playerSvg = document.getElementById('player');
+    const playerCircle = playerSvg.querySelector('circle');
+    const playerRect = playerSvg.getBoundingClientRect();
+    const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+    const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
 
-  const fall = document.querySelector('#fall path');
-  const svg = document.querySelector('svg');
-  const point = svg.createSVGPoint();
-  point.x = playerCenterX;
-  point.y = playerCenterY;
+    const fall = document.querySelector('#fall path');
+    const svg = document.querySelector('svg');
+    const point = svg.createSVGPoint();
+    point.x = playerCenterX;
+    point.y = playerCenterY;
 
-  const transform = fall.getScreenCTM().inverse();
-  const transformedPoint = point.matrixTransform(transform);
+    const transform = fall.getScreenCTM().inverse();
+    const transformedPoint = point.matrixTransform(transform);
   if (fall.isPointInFill(transformedPoint)) {
-    // Apply throwing effect (modify based on your desired behavior)
-    let throwVelocityX = -velocityX * 2;  // Adjust multiplier for throw strength
-    let throwVelocityY = -velocityY * 2;  // Adjust multiplier for throw strength
+    const angle = Math.atan2(velocityY, velocityX);
+    const bounceVelocityX = -Math.cos(angle) * 50;
+    const bounceVelocityY = -Math.sin(angle) * 50;
 
-    // Optional: Add a short delay for a more realistic impact (adjust delay time)
-    setTimeout(() => {
-      movePlayer(throwVelocityX, throwVelocityY);
-    }, 10);  // Example delay of 10 milliseconds
-
-    // Update accumulated throwing velocities (optional)
-    // You can uncomment these lines to accumulate throws over multiple collisions
-    // totalVelocityX += throwVelocityX;
-    // totalVelocityY += throwVelocityY;
+    // Apply bounce for 0.5 seconds
+    const bounceDuration = 0.5; // Adjust this value as needed (in seconds)
+    const bounceStartTime = performance.now();
+    let timeElapsed = 0;
+    while (timeElapsed < bounceDuration * 1000) { // Convert to milliseconds
+      movePlayer(bounceVelocityX, bounceVelocityY);
+      timeElapsed = performance.now() - bounceStartTime;
+    }
   }
-  // Allow normal movement logic to proceed in movePlayer
   return false;
 }
 
