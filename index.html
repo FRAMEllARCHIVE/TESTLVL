@@ -140,7 +140,6 @@ function movePlayer(velocityX, velocityY) {
         playerSvg.style.left = playerX + 'px';
         playerSvg.style.top = playerY + 'px';
     } else if (checkFallCollision(velocityX, velocityY)) {
-        // If fall collision detected, bounce back
         return;
     }
 
