@@ -186,8 +186,8 @@ function checkFallCollision(velocityX, velocityY) {
     const transformedPoint = point.matrixTransform(transform);
     if (fall.isPointInFill(transformedPoint)) {
         const angle = Math.atan2(velocityY, velocityX);
-        const bounceVelocityX = -Math.cos(angle) * 5;
-        const bounceVelocityY = -Math.sin(angle) * 5;
+        const bounceVelocityX = -Math.cos(angle) * 50;
+        const bounceVelocityY = -Math.sin(angle) * 50;
         movePlayer(bounceVelocityX, bounceVelocityY);
         return true;
     }
