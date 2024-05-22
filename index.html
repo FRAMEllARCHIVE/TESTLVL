@@ -184,20 +184,14 @@ function checkFallCollision(velocityX, velocityY) {
 
     const transform = fall.getScreenCTM().inverse();
     const transformedPoint = point.matrixTransform(transform);
-  if (fall.isPointInFill(transformedPoint)) {
-    const angle = Math.atan2(velocityY, velocityX);
-    const bounceVelocityX = -Math.cos(angle) * 5;
-    const bounceVelocityY = -Math.sin(angle) * 5;
-
-    const bounceDuration = 0.3;
-    const bounceStartTime = performance.now();
-    let timeElapsed = 0;
-    while (timeElapsed < bounceDuration * 555) {
-      movePlayer(bounceVelocityX, bounceVelocityY);
-      timeElapsed = performance.now() - bounceStartTime;
+    if (fall.isPointInFill(transformedPoint)) {
+        const angle = Math.atan2(velocityY, velocityX);
+        const bounceVelocityX = -Math.cos(angle) * 50;
+        const bounceVelocityY = -Math.sin(angle) * 50;
+        movePlayer(bounceVelocityX, bounceVelocityY);
+        return true;
     }
-  }
-  return false;
+    return false;
 }
 
 });
