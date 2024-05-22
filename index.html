@@ -65,13 +65,6 @@
             opacity: 0;
         }
 
-        #navigation {
-            position: absolute;
-            left: 98%;
-            top: 46%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-        }
 
         #fall {
             position: absolute;
@@ -96,12 +89,6 @@
             <path d="M0,61.78 L63.78,61.78 L63.78,63.78 L0,63.78 Z" fill="red"/>
             <path d="M0,0 L2,0 L2,63.78 L0,63.78 Z" fill="red"/>
             <path d="M61.78,0 L63.78,0 L63.78,63.78 L61.78,63.78 Z" fill="red"/>
-            <path d="M0 0 0 63.78 17.07 63.78 17.07 61.19 29.5 60.5 29.5 57.18 31.89 57.18 33.81 56.69 33.81 53.75 37.34 53.16 37.34 50.42 33.71 49.84 51.14 44.55 51.14 42.4 52.21 42.4 52.21 40.34 54.07 40.34 54.07 38.68 55.74 38.68 55.74 36.72 60.83 36.72 60.83 34.37 63.78 34.37 63.78 0 0 0 Z"/>
-            <path d="M44.87 63.78 L44.87 56.69 52.41 52.48 54.27 53.75 56.62 53.85 56.62 51.79 62.59 48.37 63.78 49.15 63.78 63.78 44.87 63.78 Z"/>
-        </svg>
-
-        <svg id="navigation" width="90" height="90" viewBox="0 0 70 70">
-            <circle cx="35" cy="35" r="35" fill="blue"/>
         </svg>
 
         <svg id="fall" width="90" height="90" viewBox="0 0 70 70">
@@ -143,17 +130,13 @@ function movePlayer(velocityX, velocityY) {
     const maxX = window.innerWidth;
     const maxY = window.innerHeight;
 
-    // Calculate the new position of the player
     const newPlayerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
     const newPlayerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
 
-    // Update the player's position
     playerSvg.style.left = newPlayerX + 'px';
     playerSvg.style.top = newPlayerY + 'px';
 
-    // Check for collision after updating the position
     if (checkCollision()) {
-        // If collision detected, revert the position
         playerSvg.style.left = playerX + 'px';
         playerSvg.style.top = playerY + 'px';
     } else if (checkFallCollision(velocityX, velocityY)) {
@@ -161,9 +144,7 @@ function movePlayer(velocityX, velocityY) {
         return;
     }
 
-    checkNavigationCollision();
 }
-
 
     function checkCollision() {
         const playerSvg = document.getElementById('player');
@@ -213,25 +194,6 @@ function checkFallCollision(velocityX, velocityY) {
     return false;
 }
 
-        function checkNavigationCollision() {
-            const playerSvg = document.getElementById('player');
-            const navigationSvg = document.getElementById('navigation');
-            const playerCircle = playerSvg.querySelector('circle');
-            const playerRect = playerSvg.getBoundingClientRect();
-            const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-            const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
-
-            const navigationRect = navigationSvg.getBoundingClientRect();
-
-            if (
-                playerCenterX >= navigationRect.left &&
-                playerCenterX <= navigationRect.right &&
-                playerCenterY >= navigationRect.top &&
-                playerCenterY <= navigationRect.bottom
-            ) {
-                window.parent.postMessage('navigateToLVL2', '*');
-            }
-        }
 });
 
 </script>
