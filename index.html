@@ -194,8 +194,12 @@ function checkFallCollision(velocityX, velocityY) {
       movePlayer(throwVelocityX, throwVelocityY);
     }, 10);  // Example delay of 10 milliseconds
 
-    return true;
+    // Update accumulated throwing velocities (optional)
+    // You can uncomment these lines to accumulate throws over multiple collisions
+    // totalVelocityX += throwVelocityX;
+    // totalVelocityY += throwVelocityY;
   }
+  // Allow normal movement logic to proceed in movePlayer
   return false;
 }
 
